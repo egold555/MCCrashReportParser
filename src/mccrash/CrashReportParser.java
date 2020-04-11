@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,7 +22,14 @@ public class CrashReportParser {
 		Scanner s = new Scanner(f);
 		CrashReport.CrashReportBuilder b = CrashReport.builder();
 		
-		s.nextLine(); //---- Minecraft Crash Report ----
+		
+		String in = s.nextLine(); //---- Minecraft Crash Report ----
+		
+		if(!in.equals("---- Minecraft Crash Report ----")) {
+			s.close();
+			return null;
+		}
+		
 		b.wittyComment(remove(s.nextLine(), "// "));
 		s.nextLine(); //Blank Line
 		
@@ -111,24 +119,36 @@ public class CrashReportParser {
 
 		sdb.intCache(new IntCache(f1,f2, f3, f4));
 		
-		sdb.launchedVersion(s.nextLine());
+		sdb.launchedVersion(remove(s.nextLine(), "	"));
 		sdb.LWJGL(s.nextLine());
 		sdb.OpenGL(s.nextLine());
 		
 		sb = new StringBuilder();
-		while(s.hasNextLine()) {
-			String line = s.nextLine();
-			if(line.isEmpty()) {
-				break;
-			}
-			line = remove(line, "	GL Caps: ");
+		
+		String glCaps = s.nextLine();
+		glCaps = remove(glCaps, "	GL Caps: ");
+		
+		if(glCaps.length() > 0) {
+			sb.append(glCaps + "\n");
+			while(s.hasNextLine()) {
+				String line = s.nextLine();
+				if(line.isEmpty()) {
+					break;
+				}
+				line = remove(line, "	GL Caps: ");
 
-			
-			sb.append(line + "\n");
+				
+				sb.append(line + "\n");
+			}
 		}
+		else {
+			sb.append("");
+		}
+		
 		
 		//TODO: BUG - Random space being added when splitting
 		sdb.GLCaps(sb.toString().split("\n"));
+		System.out.println(Arrays.toString(sb.toString().split("\n")));
 		
 		sdb.usingVBOs(remove(s.nextLine(), "	Using VBOs: ").equals("Yes"));
 		sdb.isModded(EnumModded.get(remove(s.nextLine(), "	Is Modded: ").split(";")[0].replace(",", "")));

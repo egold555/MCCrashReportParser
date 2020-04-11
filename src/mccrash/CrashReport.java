@@ -1,5 +1,6 @@
 package mccrash;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import lombok.AccessLevel;
@@ -11,7 +12,6 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Builder
-@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CrashReport {
 
@@ -23,8 +23,14 @@ public class CrashReport {
 	String[] initialization;
 	SystemDetails systemDetails;
 	
+	@Override
+	public String toString() {
+		return "CrashReport [wittyComment=" + wittyComment + ", time=" + time + ", description=" + description
+				+ ", exception=" + exception + ", head=" + Arrays.toString(head) + ", initialization="
+				+ Arrays.toString(initialization) + ", systemDetails=" + systemDetails + "]";
+	}
+	
 	@Getter
-	@ToString
 	@Builder
 	public static class SystemDetails {
 		String minecraftVersion;
@@ -63,10 +69,21 @@ public class CrashReport {
 				return null;
 			}
 		}
+
+		@Override
+		public String toString() {
+			return "SystemDetails [minecraftVersion=" + minecraftVersion + ", operatingSystem=" + operatingSystem
+					+ ", CPU=" + CPU + ", javaVersion=" + javaVersion + ", javaVMVersion=" + javaVMVersion + ", memory="
+					+ memory + ", jVMFlags=" + Arrays.toString(jVMFlags) + ", intCache=" + intCache
+					+ ", launchedVersion=" + launchedVersion + ", LWJGL=" + LWJGL + ", OpenGL=" + OpenGL + ", GLCaps="
+					+ Arrays.toString(GLCaps) + ", usingVBOs=" + usingVBOs + ", isModded=" + isModded + ", type=" + type
+					+ ", resourcePacks=" + Arrays.toString(resourcePacks) + ", currentLanguage=" + currentLanguage
+					+ ", profilerPosition=" + profilerPosition + "]";
+		}
+		
 	}
 	
 	@Getter
-	@ToString
 	@AllArgsConstructor
 	@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 	public static class IntCache {
@@ -74,16 +91,28 @@ public class CrashReport {
 		int tcache;
 		int allocated;
 		int tallocated;
+		@Override
+		public String toString() {
+			return "IntCache [cache=" + cache + ", tcache=" + tcache + ", allocated=" + allocated + ", tallocated="
+					+ tallocated + "]";
+		}
+		
 	}
 	
 	@Getter
-	@ToString
 	@AllArgsConstructor
 	@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 	public static class Stacktrace {
 		String type;
 		String desc;
 		String[] body;
+		@Override
+		public String toString() {
+			return "Stacktrace [type=" + type + ", desc=" + desc + ", body=" + Arrays.toString(body) + "]";
+		}
+		
 	}
+
+	
 	
 }
